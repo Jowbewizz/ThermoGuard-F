@@ -1,6 +1,7 @@
 // Gestion de la navigation
 const navLinks = document.querySelectorAll('.nav-link');
 const sections = document.querySelectorAll('.section');
+let mapInitialized = false; // Variable pour suivre l'état de la carte
 
 navLinks.forEach(link => {
     link.addEventListener('click', (event) => {
@@ -8,7 +9,14 @@ navLinks.forEach(link => {
         const target = link.getAttribute('data-target');
 
         sections.forEach(section => section.classList.remove('active'));
-        document.getElementById(target).classList.add('active');
+        const activeSection = document.getElementById(target);
+        activeSection.classList.add('active');
+
+        // Initialiser la carte si la section "map" est activée
+        if (target === 'map' && !mapInitialized) {
+            initializeMap();
+            mapInitialized = true;
+        }
     });
 });
 
@@ -42,10 +50,8 @@ function toggleRooms(levelId, imageId) {
     image.style.display = isVisible ? "none" : "block";
 }
 
-
-
-// Initialisation de la carte Mapbox
-document.addEventListener("DOMContentLoaded", () => {
+// Fonction pour initialiser la carte Mapbox
+function initializeMap() {
     mapboxgl.accessToken = 'pk.eyJ1Ijoic2lyd2l6eiIsImEiOiJjbTQwdHM4c3UxcnR2Mmtwc3VxaWtpY2JuIn0.iyfUL1dmQM1qDL_XkvtKog'; // Remplacez par votre clé API Mapbox
     const map = new mapboxgl.Map({
         container: 'map-container', // ID du conteneur de la carte
@@ -77,8 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .setPopup(new mapboxgl.Popup().setHTML(`<b>${building.info}</b>`)) // Ajouter une popup avec des informations sur le bâtiment
             .addTo(map);
     });
-});
-
+}
 
 // Carrousel
 document.addEventListener("DOMContentLoaded", function() {
@@ -99,7 +104,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // Démarrage du défilement automatique toutes les 4 secondes
     setInterval(showNextImage, 4000);
 });
-
 
 // Fonction pour récupérer les données du serveur et mettre à jour le site
 function fetchSensorData() {
